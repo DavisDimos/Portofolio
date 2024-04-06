@@ -1,0 +1,381 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define ID_LENGTH 20
+
+void read_info(int **bookCopies, char ***ISBN, char ***ID, char ***member, int *books, int *members,int **reservationStatus);
+int displayMenu();
+void buy_book(char **bookISBNs, int *bookCopies, char ***member, char ***ID, int books, int members, int *reservationStatus);
+void reserve_book(char **bookISBNs, int *bookCopies, char ***member, char ***ID, int books, int members,int *reservationStatus);
+void update_book_copies(char **bookISBNs, int *bookCopies, int books, int retire);
+void display(int *bookCopies, char **bookISBNs, char ***ID, char **member, int books, int members);
+void exitMenu();
+int is_duplicate(char **array, int size, char *value);
+
+int main()
+{   // Declare variables for book copies, book ISBNs, member information, and reservation status
+    int *bookCopies, books, members, *reservationStatus,choice=0;
+    char **bookISBNs, **member,**ID;
+
+    read_info(&bookCopies, &bookISBNs, &ID, &member, &books, &members,&reservationStatus);      // Call read_info function to initialize data
+
+    do
+    {
+        choice=displayMenu(choice);     // Display menu
+        switch (choice)
+        {
+        case 1:
+            buy_book(bookISBNs, bookCopies, member, ID, books, members, reservationStatus);
+            break;
+        case 2:
+            reserve_book(bookISBNs, bookCopies, member, ID, books, members, reservationStatus);
+            break;
+        case 3:
+            update_book_copies(bookISBNs, bookCopies, books, 0);
+            break;
+        case 4:
+            display(bookCopies, bookISBNs, ID, member, books, members);             // Display library information
+            break;
+        case 5:
+            exitMenu();
+            break;
+        default:
+            printf("Invalid choice. Please enter a valid option.\n");
+        }
+    }
+    while (1);
+
+    // Free allocated memory before exiting
+    for (int i = 0; i < books; i++)
+    {
+        free(bookISBNs[i]);
+    }
+    free(bookISBNs);
+    free(bookCopies);
+    free(reservationStatus);
+
+    for (int i = 0; i < members; i++)
+    {
+        free(member[i]);
+        free(ID[i]);
+    }
+    free(member);
+    free(ID);
+    return 0;
+}
+// Function to read and initialize library information
+void read_info(int **bookCopies, char ***ISBN, char ***ID, char ***member, int *books, int *members,int **reservationStatus)
+{
+    char buffer[100]; // Buffer to store input
+    printf("<----------------------LIBRARY------------------------>\n");
+    printf("Enter the number of books\n|-> ");
+    scanf("%d", books);
+
+    printf("<----------------------------------------------------->\n");
+    // Allocate memory for bookCopies and reservationStatus arrays based on the number of books
+    *bookCopies = (int *)malloc((*books) * sizeof(int));
+    *reservationStatus = (int *)malloc((*books) * sizeof(int));
+
+    // Initialize bookCopies and reservationStatus arrays
+    for (int i = 0; i < *books; i++)
+    {
+        (*bookCopies)[i] = 0;
+        (*reservationStatus)[i] = 0;  // Initialize reservation status to false for all books
+    }
+    *ISBN = (char **)malloc((*books) * sizeof(char *));     // Allocate memory for ISBN array based on the number of books
+
+    for (int i = 0; i < *books; i++)
+    {
+        (*ISBN)[i] = (char *)malloc(20 * sizeof(char));
+        do
+        {
+            printf("Enter ISBN for %do book\n|-> ", i + 1);
+            scanf("%s", (*ISBN)[i]);
+
+            if (is_duplicate(*ISBN, i, (*ISBN)[i]))
+            printf("ISBN already used. Please enter a unique ISBN.\n");
+
+        } while (is_duplicate(*ISBN, i, (*ISBN)[i]));;
+
+        printf("<----------------------------------------------------->\n");
+        printf("Enter the number of copies for the %do book\n|-> ", i + 1);
+        scanf("%d", &(*bookCopies)[i]);
+        printf("<----------------------------------------------------->\n");
+    }
+    printf("Enter the number of library members\n|-> ");
+    scanf("%d", members);
+
+    printf("<----------------------------------------------------->\n");
+    // Allocate memory for ID and member arrays based on the number of members
+    *ID = (char **)malloc((*members) * sizeof(char *));
+    *member = (char **)malloc((*members) * sizeof(char *));
+
+    // Loop to input ID and name for each library member
+    for (int i = 0; i < *members; i++)
+    {
+        (*ID)[i] = (char *)malloc((ID_LENGTH + 1) * sizeof(char));  // Allocate memory for ID array for the current member
+        do
+        {
+            printf("Enter the ID for the %do member\n|-> ", i + 1);
+            scanf("%s", (*ID)[i]);
+            getchar(); // Consume the newline character in the input buffer
+
+            if (is_duplicate(*ID, i, (*ID)[i]))
+            printf("ID already used. Please enter a unique ID.\n");
+
+        } while (is_duplicate(*ID, i, (*ID)[i]));
+
+        printf("<----------------------------------------------------->\n");
+        printf("Enter the name of the %do member\n|-> ", i + 1);
+        // Allocate memory for (*member)[i]
+    (*member)[i] = (char *)malloc(100 * sizeof(char)); // Adjust the size as needed
+        fgets(buffer, sizeof(buffer), stdin);           // Use fgets to read the entire line
+
+        buffer[strcspn(buffer, "\n")] = '\0';           // Remove newline character from the name
+        strcpy((*member)[i], buffer);           // Copy the name to the member array
+        printf("<----------------------------------------------------->\n");
+    }
+}
+
+int displayMenu(choice)
+{
+    printf("<----------Library-Management-System-Menu------------->\n");
+    printf("1. Buy a Book\n");
+    printf("2. Reserve a Book\n");
+    printf("3. Update Book Copies\n"); // Added option for updating book copies
+    printf("4. Display Library Information\n");
+    printf("5. Exit\n");
+    printf("|-> ");
+    scanf("%d",&choice);
+    getchar(); // Consume the newline character
+    return choice;
+}
+
+void buy_book(char **bookISBNs, int *bookCopies, char ***member, char ***ID, int books, int members, int *reservationStatus)
+{
+    printf("<---------------------BUY-BOOK------------------------>\n");
+    int bookIndex=-1;       // Initialize bookIndex to -1 for later use
+
+    printf("Enter ID\n|-> ");
+    char memberID[20];
+    scanf("%s", memberID);
+
+    printf("<----------------------------------------------------->\n");
+    printf("Enter ISBN\n|-> ");
+    char isbn[20];
+    scanf("%s", isbn);
+
+    printf("<----------------------------------------------------->\n");
+    // Search for the member with the entered ID
+    int memberIndex = -1;
+    for (int i = 0; i < members; i++)
+    {
+        if (strcmp(ID[i], memberID) == 0)
+        {
+            memberIndex = i;
+            break;
+        }
+    }
+    // Search for the book with the entered ISBN
+    for (int i = 0; i < books; i++)
+    {
+        if (strcmp(bookISBNs[i], isbn) == 0)
+        {
+            bookIndex = i;
+            break;
+        }
+    }
+    // Check if the member with the entered ID exists
+    if (memberIndex == -1)
+    {
+        printf("No library member found with ID %s.\n", memberID);
+        return;
+    }
+    // Check if the book with the entered ISBN exists
+    if (bookIndex == -1)
+    {
+        printf("No book found with ISBN %s.\n", isbn);
+        return;
+    }
+    // Check if the book is available in the library
+    if (bookCopies[bookIndex] == 0)
+    {
+        printf("The book is not available.\n");
+        return;
+    }
+    // Check if the book has been reserved by the user
+    if (reservationStatus[bookIndex])
+    { // Reduce the number of available copies of the book
+        bookCopies[bookIndex]--;
+        printf("Book purchased successfully for member %s.\n", member[memberIndex]);
+    }
+    else
+        printf("Cannot buy the book. Please reserve it first.\n");  // Print a message indicating that the book cannot be bought without reservation
+}
+
+void reserve_book(char **bookISBNs, int *bookCopies, char ***member, char ***ID, int books, int members,int *reservationStatus)
+{
+    printf("<-------------------RESERVE-BOOK---------------------->\n");
+
+    int bookIndex=-1;       // Initialize bookIndex to -1 for later use
+    printf("Enter  ID\n|-> ");
+    char memberID[20];
+    scanf("%s", memberID);
+
+    printf("<----------------------------------------------------->\n");
+    printf("Enter  ISBN\n|-> ");
+    char isbn[20];
+    scanf("%s", isbn);
+
+    printf("<----------------------------------------------------->\n");
+    // Search for the member with the entered ID
+    int memberIndex = -1;
+    for (int i = 0; i < members; i++)
+    {
+        if (strcmp(ID[i], memberID) == 0)
+        {
+            memberIndex = i;
+            break;
+        }
+    }
+    // Search for the book with the entered ISBN
+    for (int i = 0; i < books; i++)
+    {
+        if (strcmp(bookISBNs[i], isbn) == 0)
+        {
+            bookIndex = i;
+            break;
+        }
+    }
+    // Check if the member with the entered ID exists
+    if (memberIndex == -1)
+    {
+        printf("No library member found with ID %s.\n", memberID);
+        return;
+    }
+     // Check if the book with the entered ISBN exists
+    if (bookIndex == -1)
+    {
+        printf("No book found with ISBN %s.\n", isbn);
+        return;
+    }
+    // Check if the book is available in the library
+    if (bookCopies[bookIndex] > 0)
+    {
+        printf("Book reserved successfully for member %s.\n", member[memberIndex]);
+        bookCopies[bookIndex]--;         // Reduce the number of available copies of the book
+        reservationStatus[bookIndex] = 1;           // Set the reservation status to true
+    }
+    else
+    {
+        printf("The book is not available\n");
+        reservationStatus[bookIndex] = 0;          // Set the reservation status to false
+    }
+}
+
+void update_book_copies(char **bookISBNs, int *bookCopies, int books, int retire)
+{
+    printf("<---------------UPDATE-BOOK-COPIES-------------------->\n");
+    char isbn[20];
+    int copies_change;
+
+    printf("Enter ISBN of the book to update copies\n|->");
+    scanf("%s", isbn);
+    printf("<----------------------------------------------------->\n");
+
+    // Search for the book with the entered ISBN
+    int bookIndex = -1;
+    for (int i = 0; i < books; i++)
+    {
+        if (strcmp(bookISBNs[i], isbn) == 0)
+        {
+            bookIndex = i;
+            break;
+        }
+    }
+    // Check if the book with the entered ISBN exists
+    if (bookIndex == -1)
+    {
+        printf("Book with ISBN %s not found.\n", isbn);
+        return;
+    }
+
+    printf("Enter the number of copies\nto add (positive number) or withdraw (negative number)\n|-> ");
+    scanf("%d", &copies_change);
+
+    printf("<----------------------------------------------------->\n");
+    // Retire the book and set copies to 0
+    if (copies_change == 0)
+    {
+        printf("No change in copies for book with ISBN %s.\n", isbn);
+        return;
+    }
+    else if (copies_change > 0)
+    {   // Add copies if the entered number is positive
+        bookCopies[bookIndex] += copies_change;
+        printf("%d copies added for book with ISBN %s.\n", copies_change, isbn);
+    }
+    else
+    {    // Withdraw copies if the entered number is negative
+        if (bookCopies[bookIndex] < abs(copies_change))
+        {   // Check if there are enough copies to retire
+            printf("Error: Not enough copies to withdraw.\n");
+            return;
+        }
+        else
+        {              // Withdraw copies and update the count
+            bookCopies[bookIndex] += copies_change;
+            printf("%d copies withdrawn for book with ISBN %s.\n", -copies_change, isbn);
+        }
+    }
+}
+
+
+void display(int *bookCopies, char **bookISBNs, char ***ID, char **member, int books, int members)
+{
+    printf("<------------------LIBRARY-DATA----------------------->\n");
+
+    printf("<---------------------BOOKS----------------------------\n");
+    for (int i = 0; i < books; i++)
+    {
+        printf("ISBN: %s, COPIES: %d\n", bookISBNs[i], bookCopies[i]);
+    }
+    printf("<-------------------MEMBERS--------------------------->\n");
+    for (int i = 0; i < members; i++)
+    {
+        printf("ID: %s, NAME: %s\n", ID[i], member[i]);
+    }
+}
+
+void exitMenu()
+{
+    printf("<-----------------------EXIT-------------------------->\n");
+    int choice;
+    printf("Are you sure you want to exit?\n");
+    printf("0.Yes       1.No\n");
+    printf("|-> ");
+    scanf("%d", &choice);
+    if (choice == 0)
+    {
+        printf("GoodBye!\n");
+        printf("<-------------------End-Programming------------------->\n");
+        exit(0);
+    }
+    else if (choice == 1)
+        printf("Returning to the menu...\n");// User chose not to exit
+    else
+        printf("Error: Invalid choice, please enter 0 for Yes or 1 for No.\n");// User entered an invalid choice
+
+}
+int is_duplicate(char **array, int size, char *value)
+{
+    for (int i = 0; i < size; i++)
+    {
+        if (strcmp(array[i], value) == 0)
+        {
+            return 1; // Duplicate found
+        }
+    }
+    return 0; // No duplicate found
+}
+
