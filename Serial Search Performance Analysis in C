@@ -1,0 +1,153 @@
+// Davis Dimosthenis AM: 3212019038
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define N 100
+
+// Dilosi sinartisewn.
+void serial_search_first();
+void serial_search_multiple();
+
+int main ()
+{
+    // Dilosi metavlitwn.
+    int size,*array,i,key,sum_cnt=0,comparisons;
+    float start_time,end_time,sum_time=0;
+
+    srand(time(NULL)); // Arxikopoiei genitria tixaiwn timwn.
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    //Dimoioyrgia tou pinaka.
+    printf("Enter the size of the array: ");
+    scanf("%d",&size);  // Eisagogi tou megethous tou pinaka.
+
+    array=(int*)malloc(size*sizeof(int));   // Desmeysis mnimis gia tin dimiourgia pinaka.
+
+    // Xrisi tis if stin periptosi pou den tha desmeytei mnimi.
+    if (array == NULL)
+    {
+        printf("Error memory allocation.\n");
+        exit(0);
+    }
+
+    // Gemisma tou pinaka me tixaies times sto diastima 1-size.
+    for (i=0;i<size;i++)
+    {
+        *(array+i)=rand()%size+1;
+    }
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    //Emfanisi tou pinaka prin kalesoume tis sinartiseis.
+    printf("Array:\n");
+
+     for (i=0;i<size;i++)
+    {
+        printf("%d ",array[i]);
+    }
+
+    puts("\n");
+    printf("-----------------------------------------------------------------------\n");
+    /*  Arxikopoiei to key me tixaia timi sto diastima 1-size kai emfanisi tou.
+     *  Xrisi for gia na ginei epanalipsi N fores wste na brethei o mesos arithmos sigkrisewn
+     *  kai o mesos xronos anazitisis gia tin serial_search_first.
+     */
+    for (i=0;i<N;i++){
+    key=rand()%size+1;
+
+    printf("Key: %d\n",key);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    // Kalesma tis sinartisi serial_search_first wste na vrei to key.
+
+    printf("Serial search\nComplete when the key appears for the first time in the array.\n");
+    puts("");
+
+    start_time = clock();   // Arxi metrhsis xronou.
+
+    serial_search_first(array,size,key,&comparisons);
+
+    sum_cnt+=comparisons;   // Athrisma gia to plithos sigkrisewn.
+
+    end_time = clock(); // Telos metrhshs xronou.
+    sum_time+=(end_time-start_time);    // Athrisma gia ton xrono.
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    //Kalesma tis sinartisis serial_search_multiple wste na vrei to key.
+
+    printf("Serial search\nComplete when found all exists of the key in the array.\n");
+    puts("");
+
+    serial_search_multiple(array,size,key);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+    printf("-----------------------------------------------------------------------\n");
+
+    }
+    /*  Euresi kai emfanisi tou mesou arithmos sigkrisew
+     *  kai tou mesou xronou anazitisis gia tin serial_search_first.
+     */
+    printf("Average number of comparisons: %.2f\n",(float)sum_cnt/N);
+    printf("Average search time: %.2f\n",sum_time/N);
+
+    puts("");
+    printf("-----------------------------End-Program-------------------------------\n");
+
+   return 0;
+}
+
+// Orismos sinartisis opou oloklironetai otan vriskei gia prwti fora to key
+void serial_search_first(int a[],int s,int k,int *cnt)
+{
+    int c=0;    // Arxikopoiisi tou c gia na elegxei an to key vriksetai ston pinaka.
+
+    for(int i=0; i<s; i++)
+    {
+        if(*(a+i) == k)
+        {
+            printf("The key %d founded in %d position in the array.\n",k,i+1);
+             *cnt = i+1; // Metrisi gia to plithos sigkrisewn.
+            printf("Compared %d times until was founded.\n",cnt);
+
+            c = 1;    // Gia to oti vrethike to key dilonetai to c ws 1
+            break;  // Eksodos apo tin for afou vrei to key
+        }
+    }
+
+    /*  Xrisi tou c stin periptwsi pou den tha vrethei to key .
+     *  Emfanisi katalilou minimatos.
+     */
+    if (c == 0)
+        printf("The key %d was not founded in the array.\n",k);
+}
+
+// Orismos sinartisis opou oloklironetai otan vriskei oles tis emfaniseis tou key.
+void serial_search_multiple(int a[],int s,int k)
+{
+    int c=0;    // Arxikopoiisi tou c gia na elegxei an to key vriksetai ston pinaka.
+
+    for(int i=0; i<s; i++)
+    {
+        if(*(a+i) == k)
+        {
+            printf("The key %d founded in %d position in the array.\n",k,i+1);
+            c = 1;    // Gia to oti vrethike to key dilonetai to c ws 1
+        }
+    }
+
+    /*  Xrisi tou c stin periptwsi pou den tha vrethei to key .
+     *  Emfanisi katalilou minimatos.
+     */
+    if (c == 0)
+        printf("The key %d was not founded in the array.\n",k);
+}
