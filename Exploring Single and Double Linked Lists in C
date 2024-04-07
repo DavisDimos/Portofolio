@@ -1,0 +1,487 @@
+// Davis Dimosthenis AM: 3212019038
+
+#include <stdio.h>
+
+//  Komvos pou apoteleite apo ta data kai ton deikti ston epomeno komvo.
+struct Node
+{
+    int data;
+    struct Node *next;
+};
+//  Komvos pou apoteleite apo ta data kai tous deiktes ston proigoumeno kai ston epomeno komvo.
+struct dNode
+{
+    int data;
+    struct dNode *prev;
+    struct dNode *next;
+};
+
+// Dilosi sunartisewn.
+void addNodeSingle(struct Node **head,int newnum,char pos[]);
+void addAscending(struct Node** head, int newnum);
+void displayList(struct Node *head);
+int countList(struct Node *head);
+void deleteNode(struct Node **head, int key);
+void deleteLast(struct Node **head);
+void swapItem(struct Node** head,int position);
+void addNodeDouble(struct dNode **head,struct dNode **tail,int newnum,char pos[]);
+void ReversedisplayList(struct dNode **head,struct dNode **tail);
+
+int main()
+{
+    struct Node* head = NULL;   //  Arxikopoihsh aplis listas.
+    struct dNode *start,*tail;  //  Arxikopoihsh diplis listas.
+    start=tail=NULL;
+
+    //  Kalesma tis kathe sunartiseis gia elegxo leitourgikotitas kai emfanisi katallilwn mhnumatwn.
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    printf("The list: \n");
+    displayList(head);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    deleteLast(&head);
+    deleteNode(&head,1);
+    addNodeSingle(&head,5,"head");
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    printf("The list: \n");
+    displayList(head);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    deleteLast(&head);
+
+    printf("The list: \n");
+    displayList(head);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    addNodeSingle(&head,5,"head");
+    deleteNode(&head,1);
+    addNodeSingle(&head,3,"head");
+    addNodeSingle(&head,7,"tail");
+    addAscending(&head,6);
+    addAscending(&head,2);
+    addAscending(&head,1);
+    addAscending(&head,4);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    printf("The list: \n");
+    displayList(head);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    printf("The list's size is: %d\n", countList(&*head));
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    deleteLast(&head);
+    addNodeSingle(&head,1,"head");
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    printf("The list: \n");
+    displayList(head);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    deleteNode(&head,1);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    printf("The list: \n");
+    displayList(head);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    deleteNode(&head,3);
+    addNodeSingle(&head,7,"tail");
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    printf("The list: \n");
+    displayList(head);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    swapItem(&head,3);
+    printf("Swap list: \n");
+    displayList(head);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    addNodeDouble(&start,&tail,1,"head");
+    addNodeDouble(&start,&tail,9,"tail");
+    addNodeDouble(&start,&tail,3,"head");
+    addNodeDouble(&start,&tail,10,"tail");
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    ReversedisplayList(&start,&tail);
+
+    puts("");
+    printf("-----------------------------End-Program-------------------------------\n");
+
+    return 0;
+}
+
+// Orismos sinartisis opou prosthetei enan neo komvo se mia apli sundedemeni lista.
+void addNodeSingle(struct Node **head,int newnum,char pos[])
+{
+    struct Node *newnode;   //  Neos Komvos.
+    newnode = (struct Node *) malloc(sizeof(struct Node));      //  Desmeush mnimis gia ton komvo pou tha prostethei.
+
+    //  Elegxos an egine h desmeush mnimis.
+    if (!newnode)
+    {
+        printf("Error malloc!");
+        return -1;
+    }
+
+    newnode->data = newnum; // H timi pou tha kataxorithei.
+
+    /*
+     *  Elegxos an h lista einai adeia.
+     *  Elegxos an h prosthiki einai stin arxi tis listas.
+     *  Elegxos an h prosthiki einai sto telos tis listas.
+     */
+    if ((*head) == NULL)
+    {
+        newnode->next=NULL;
+        *head = newnode;
+        printf("Node with %d was added in empty list.\n",newnum);
+    }
+    else if (strcmp(pos,"head")==0)
+    {
+        newnode->next = (*head);    //  O epomenos komvos deixnei ekei pou deixnei h kefali tis listas.
+        (*head) = newnode;  // H kefali deixnei ston neo komvo.
+        printf("Node with %d was added at the beginning of the list.\n",newnum);
+    }
+    else if (strcmp(pos,"tail")==0)
+    {
+        struct Node *last = *head;  //  Diktis pou diasxizei tin lista.
+
+        newnode->next = NULL;   //  O next tha deixnei sto NULL afou o neos komvos tha prostethei sto telos.
+
+        //  Diasxisi tis listas mexri ton teleuteo komvo.
+        while (last->next != NULL)
+        {
+            last = last->next;
+        }
+
+        last->next = newnode; //O next tou proteleutaiou komvou alazei kai tha deixnei ston neo komvo pou prosthethike sto telos ths listas.
+        printf("Node with %d was added at the end of the list.\n",newnum);
+    }
+}
+
+// Orismos sinartisis opou prosthetei enan neo komvo se mia kata auksousa seira taksinomimeni lista (apli sundedemeni).
+void addAscending(struct Node** head, int newnum)
+{
+    struct Node* newnode = (struct Node*)malloc(sizeof(struct Node));    //  Desmeusi mnimis gia ton komvo pou tha prostethei.
+
+    //  Elegxos an egine h desmeush mnimis.
+    if (!newnode)
+    {
+        printf("Error malloc!");
+        return -1;
+    }
+
+    newnode->data = newnum; // H timi pou tha kataxorithei.
+    newnode->next = NULL;   //  O next tha deixnei sto NULL.
+
+    /*
+     *  Elegxos stin periptosi pou einai keni h lista wste na prosthethei o neos kombos.
+     *  Elegxos wste na mpei o neos komvos stin arxi tis listas.
+     *  Allios na ginei elegxos wste na mpei o neos komvos taksinomimena.
+     */
+    if (*head == NULL )
+    {
+        newnode->next = *head;   //  O epomenos komvos deixnei ekei pou deixnei h kefali tis listas.
+        *head = newnode;    // H kefali deixnei ston neo komvo.
+        printf("Node with %d was added in empty list.\n",newnum);
+    }
+    else if ((*head)->data >= newnode->data)
+    {
+        newnode->next = *head;  //  O epomenos komvos deixnei ekei pou deixnei h kefali tis listas.
+        *head = newnode;    // H kefali deixnei ston neo komvo.
+        printf("Node with %d was added sorted at the beginning of the list.\n",newnum);
+    }
+    else
+    {
+        struct Node* current = *head;   //  Diktis gia na diasxisei tin lista.
+
+        //  Diasxisi tis listas mexri na vrei taksinomimena pou tha mpei o neos komvos.
+        while (current->next != NULL && current->next->data < newnode->data)
+        {
+            current = current->next;
+        }
+        newnode->next = current->next;
+        current->next = newnode;
+        printf("Node with %d was added sorted.\n",newnum);
+    }
+}
+
+// Orismos sinartisis opou tha emfanizei ta dedomena pou einai apothikeumena stous komvous tis listas.
+void displayList(struct Node *head)
+{   //  Elegxos an h lista einai adia.
+    if(head == NULL)
+    {
+        printf("Empty list.\n");
+    }
+    //  An den einai adeia emfanizei ta dedomemena
+    while (head != NULL)
+    {
+        printf(" %d ", head->data);
+        head = head->next;
+    }
+    puts("");
+}
+
+// Orismos sinartisis opou epistrefei to plithos twn stoixeiwn tis listas.
+int countList(struct Node *head)
+{
+    int cnt = 0; // Arxikopoihsh metriti.
+
+    struct Node* current = head;    //  Diktis gia na diasxisei tin lista.
+    while (current != NULL)
+    {
+        cnt++;
+        current = current->next;
+    }
+    return cnt;
+}
+
+/*
+ *  Orismos sinartisis opou tha anazita an o akeraios arithmos (number) einai apothikeumenos se kapoion komvo
+ *  kai an einai tha ton diagrafei.
+ */
+void deleteNode(struct Node **head, int number)
+{
+
+    struct Node *temp;
+    /*
+     *  Elegxos stin periptosi pou einai keni h lista.
+     *  Allios na ginei elegxos wste na diagragei komvos.
+     */
+    if(*head == NULL)
+    {
+        printf("There is nothing to delete.\n");
+    }
+    else
+    {
+        if((*head)->data == number)
+        {
+            temp = *head;
+            *head = (*head)->next;
+            free(temp);
+            printf("Node with %d deleted from the beginning of the list.\n",number);
+        }
+        else
+        {
+            struct Node *current  = *head;
+
+            int flag=0; //  Arxikopoihsh flag wste otan teleiwsei o elegxos na emfanisei katallilo minuma.
+
+            while(current->next != NULL)
+            {
+                if(current->next->data == number)
+                {
+                    temp = current->next;
+                    current->next = current->next->next;    //  O komvos tha figei apo tin lista.
+                    free(temp); //  Eleutherwsi tis thesis mnimis pou deixnei o temp.
+                    flag =1;
+                    break;
+                }
+                else
+                {
+                    current = current->next;
+                }
+            }
+
+            if(flag==0)
+            {
+                printf("Node with %d was not in list.\n",number);
+            }
+            else
+            {
+                printf("Node with %d deleted.\n",number);
+            }
+        }
+    }
+}
+
+// Orismos sinartisis opou tha diagrafei ton teleutaio komvo tis listas.
+void deleteLast(struct Node **head)
+{
+    struct Node* current = *head;
+    struct Node* prev;
+
+    /*
+     *  Elegxos an einai keni h lista tote den mporei na diagrafei kati.
+     *  Allios tha diagrafei o teleutaios komvos.
+     */
+    if(*head == NULL)
+    {
+        printf("There is nothing to delete.\n");
+    }
+    else
+    {
+        //  Stin periptosi pou exei enan komvo h lista.
+        if(current->next == NULL)
+        {
+            printf("Node with %d deleted and the list is empty now.\n",(*head)->data);
+            *head = NULL;
+        }
+        else
+        {
+            //  diasxisi tis listas mexri ton teleuteo komvo.
+            while (current->next != NULL)
+            {
+                prev = current;
+                current = current->next;
+            }
+            prev->next = NULL;
+
+            printf("Node with %d deleted from the end of the list.\n", current->data);
+            free(current);  //  Eleutherwsi tis thesis mnimis pou deixnei o current.
+        }
+    }
+}
+
+// Orismos sinartisis opou tha antallazei to stoixeio pou dilwnetai apo to position me to teleutaio.
+void swapItem(struct Node** head,int position)
+{
+    // Elegxos an einai keni h lista tote den mporei na antallaksei kati.
+    if (*head == NULL)
+    {
+        printf("There is nothing to swap.\n");
+    }
+    else
+    {   //deiktes gia na diasxisoume th lista.
+        struct Node *tmp = *head;
+        struct Node *cu = *head;
+
+        int x;
+        int i = 1; //Arxikopoihsh gia tin thesi stin lista.
+
+        //  Diasxizoume tin lista
+        while (tmp->next != NULL)
+        {
+            tmp = tmp->next;
+        }
+        while (cu != NULL)
+        {   //  Elegxos an brethike h thesi stin lista gia tin antallagi.
+            if (i == position)
+            {
+                x = cu->data;      //  Xrisimopoioume tin x gia proswrini apothikeusi tou stoixeiou sto temp.
+                cu->data = tmp->data;   //  Antallazei to stoixeio me to teleutaio.
+                tmp->data = x;  // Antallazei to teleutaio me to stoixeio.
+            }
+            else
+            {
+                cu = cu->next;
+            }
+            i++;
+        }
+    }
+}
+
+// Orismos sinartisis opou tha prosthetei enan neo komvo se mia dipli sundedemeni lista.
+void addNodeDouble(struct dNode **head,struct dNode **tail,int newnum,char pos[])
+{
+    struct dNode *newnode = (struct dNode*)malloc(sizeof(struct dNode));     //  Desmeusi mnimis gia ton komvo pou tha prostethei.
+
+    //  Elegxos an egine h desmeush mnimis.
+    if(newnode == NULL)
+    {
+        printf("Error malloc!");
+    }
+
+    newnode->data = newnum; // H timi pou tha kataxorithei.
+    /*
+     *  Elegxos gia to an h lista einai keni
+     *  Elegxos an h prosthiki einai stin arxi tis listas.
+     *  Elegxos an h prosthiki einai sto telos tis listas.
+     */
+
+    if (*head==NULL)
+    {
+        *head=*tail=newnode;
+        newnode->prev=NULL;
+        newnode->next=NULL;
+        printf("Node with %d was added in empty double list.\n",newnum);
+    }
+    else if (strcmp(pos,"head")==0)
+    {
+        newnode->next = (*head);    //  O neos komvos tha deixnei sto head ws ton epomeno komvo
+        newnode->prev = NULL;
+
+        /* 4. change prev of head node to new node */
+
+        (*head)->prev = newnode;    //  Allagi tou proigoumeno komvou me ton neon.
+        *head = newnode;    // Allazei to head na deixnei ton neon komvo.
+
+        printf("Node with %d was added at the beginning of the double list.\n",newnum);
+    }
+    else if (strcmp(pos,"tail")==0)
+    {
+        newnode->data = newnum;
+        newnode->next = NULL;
+        newnode->prev = *tail;
+
+        (*tail)->next = newnode;    // O teleutaios tha deixnei ston kainourio komvo
+        *tail=newnode;  //  O kainourios komvos tha ginei o neos teleutaios komvos.
+
+        printf("Node with %d was added at the end of the double list.\n",newnum);
+    }
+}
+
+// Orismos sinartisis opou tha emfanizei ta dedomena pou einai apothikeumena stous komvous tis listas me anapodi seira.
+void ReversedisplayList(struct dNode **head,struct dNode **tail)
+{
+    printf("Reverse list: \n");
+
+    if(*head == NULL)
+    {
+        printf("Empty list.");
+    }
+    else
+    {
+        while ((*tail)->next != NULL)
+        {
+           *tail = (*tail)->next;
+        }
+    }
+
+    while (*tail != *head)
+    {
+        printf("%d ",(*tail)->data);
+        *tail = (*tail)->prev;
+    }
+
+    printf("%d ",(*tail)->data);
+    puts("");
+}
+
+
+
