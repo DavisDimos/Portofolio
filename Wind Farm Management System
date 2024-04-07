@@ -1,0 +1,211 @@
+// Davis Dimosthenis AM: 3212019038
+
+#include <iostream>
+#include <stdlib.h>
+#include<time.h>
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define N 140   // Dilwsi megethous pinaka.
+
+// Dilosi sinartisis
+int minimum(int arr[]);
+
+int main()
+{
+    // Dilosi metavlitwn.
+    int i,multitude[N],j,sum_multitude=0,sum,max,sum_5 = 0;
+    float *energy[N],sum_revenue=0,sum_array[N];
+    string location[N],minlocation[N];
+
+    cout<<endl;
+    cout<<"-----------------------------------------------------------------------\n";
+
+    //  Eisagogi dedomenwn stous pinakes gia ta onomata(location) kai ta plithos(multitude).
+
+    for(i=0;i<N;i++)
+    {
+        cout << "Enter the park's location: ";
+        cin >> location[i];
+        cout << "Enter the number of wind turbines:";
+        cin >> multitude[i];
+
+        cout<<endl;
+        cout<<"-----------------------------------------------------------------------\n";
+    }
+
+    //  Dimiourgia kai gemisma pinaka(energy) gia tin paragwgi energeias.
+    for(i=0;i<N;i++)
+    {
+        energy[i]=(float *)malloc(multitude[i]*sizeof(float));  // Desmeysis mnimis gia tin dimiourgia pinaka energy.
+    }
+
+    for(i=0;i<N;i++)
+    {
+        for (j=0;j<multitude[i];j++)
+        {
+
+            cout << "Enter the predicted monthly output of "<< location[i] << "'s "<< j+1 << " wind turbine: ";
+            cin >> energy[i][j];
+
+            /* Xrisi if kai cuntinue wste an valei o xristis lathos dedomeno
+             *  kai na ksana zitisei gia tin sigkekrimeni anemogenitria.
+             */
+
+            if (energy[i][j] >20 || energy[i][j]<0)
+            {
+                cout << "Wrong value!"<<endl;
+                cout << "You will have to re-enter the value"<<endl;
+
+                j--;
+                continue;
+            }
+        }
+    }
+    cout<<endl;
+    cout<<"-----------------------------------------------------------------------\n";
+
+    //  Emfanisi pinaka me ta onomata tis topothesias tou parkou (location).
+    cout<< "Park's locations"<<endl;
+
+    for(i=0;i<N;i++)
+    {
+      cout<< location[i]<<endl;
+    }
+    cout<<endl;
+    cout<<"-----------------------------------------------------------------------\n";
+
+    //  Emfanisi pinaka me to plithos twn anemogenitriwn pou tha topothetithoun ston parko (multitude).
+    cout <<"Multitude of wind turbines"<<endl;
+    for(i=0;i<N;i++)
+    {
+      cout<< multitude[i]<<endl;
+    }
+    cout<<endl;
+    cout<<"-----------------------------------------------------------------------\n";
+
+    //  Emfanisi pinaka me tin energia tis kathe anemogenitrias tou kathe parkou(energy).
+    cout<<"Energy for every wind turbine"<<endl;
+
+    for(i=0;i<N;i++)
+    {
+        for (j=0;j<multitude[i];j++)
+        {
+        cout << energy[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+    cout<<"-----------------------------------------------------------------------\n";
+
+    //  Ypologismos kai emfanisi tis timis gia ta sinolika esoda tis etairias.
+
+    for(i=0;i<N;i++)
+    {
+        for (j=0;j<multitude[i];j++)
+        {
+            //  Athrisma tis energias apo kathe anemogenitria  r simpiontas ton pinaka tis energeias(energy).
+            sum_revenue+=energy[i][j];
+        }
+    }
+
+    cout<<"Total revenue of the company: "<<sum_revenue*2.3<<endl;
+
+    //  Ypologismos kai emfanisi tis timis gia ton sinoliko arithmo twn anemogennitriwn.
+
+    for(i=0;i<N;i++)
+    {
+        //  Athrisma tou plithos twn anemogenitriwn, xrisimpiontas ton pinaka twn plithwn(multitude).
+        sum_multitude+=multitude[i];
+    }
+
+    cout<<"Total number of wind turbines: "<<sum_multitude<<endl;
+
+    // Ypologismos kai emfanisi tis topothesias(ies) tou parkou me tin megaliteri paragwgi energeia.
+
+    for(i=0; i<N; i++)
+    {
+        // Athrizoume kata grammi apo ton pinaka energy.
+        sum = 0;
+        for(j=0; j<multitude[i]; j++)
+        {
+            sum = sum + energy[i][j];
+
+
+        }
+        sum_array[i] = sum;
+    }
+
+    // Euresi megaliterou stoixeiou apo to sum_array.
+    max = sum_array[0];
+    for (i=0;i<N;i++)
+    {
+        if(sum_array[i]>max)
+        {
+            max = sum_array[i];
+        }
+    }
+
+    cout<<"Location of the wind farm with the largest electricity production: "<<endl;
+
+    for(i=0;i<N;i++)
+    {
+        if(max==sum_array[i])
+        {
+            cout << location[i]<<endl;
+        }
+    }
+
+    //  Ypologismos kai emfanisi tis topothesias(ies) tou parkou me tis ligoteres anemogenitries.
+
+    cout<<"Location of the wind farm with the least wind turbines: "<<endl;
+
+    /*  Xrisimopoioume tin sinarti minimum wste na vroume tin mikroteri timi
+     *  tin sigkrinoume me to plithos wste na vroume se poia topothesia einai
+     *  kai ta apothikeuoume se ena pinaka oles tis topothesies me tis ligoteres anemogenitries.
+     */
+     for(i=0;i<N;i++)
+    {
+        if(multitude[i]==minimum(multitude))
+        {
+            minlocation[i]=location[i];
+        }
+    }
+
+    for(i=0;i<N;i++)
+    {
+        if(minlocation[i] != "\0")
+        {
+          cout<<minlocation[i]<<endl;
+        }
+    }
+
+    //  Ypologismos kai emfanisi tou posostou egkatastimenis energias tou 5ou kata seira parkou.
+    for (i=0; i<multitude[N-1]; i++)
+    {
+        sum_5 +=energy[N-1][i];
+    }
+
+  cout<<"Percentage of the energy of 5th in order wind farm: "<<setprecision(3) <<(sum_5*100)/sum_revenue<<endl;
+
+  cout<<endl;
+  cout<<"-----------------------------End-Program-------------------------------\n";
+
+    return 0;
+}
+
+//  Orismos sinartisis opou epistrefei tin mikroteri timi.
+int minimum(int arr[])
+{
+    // Arxikopoisi elaxistis me to prwto stoixeio tou pinaka.
+    int min = arr[0];
+
+    //  Elegxos an uparxei mikroteri timi ston ypoloipo pinaka.
+    for (int i = 1; i < N; i++)
+        if (arr[i] < min)
+            min = arr[i];
+
+    return min;
+}
+
