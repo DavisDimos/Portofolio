@@ -1,0 +1,185 @@
+// Davis Dimosthenis AM: 3212019038
+
+#include <stdio.h>
+#include <ctype.h>
+
+//  Komvos pou apoteleite apo ta number, ta data kai tous deiktes ston proigoumeno kai ston epomeno komvo.
+struct node
+{
+    int number;
+    char data;
+    struct node *next;
+    struct node *prev;
+};
+
+//  Lista pou apoteleite apo to haid kai to tail.
+struct list
+{
+   struct node *head;
+   struct node *tail;
+};
+
+// Dilosi sunartisewn.
+int put(char word, struct list *items);
+int display(struct node *temp, int x);
+
+int main()
+{
+    //  Dilosi listes gia kathe xaraktira.
+    struct list vowels = {};
+    struct list consonants = {};
+    struct list specials = {};
+
+    //  Pinakaes wste na diavazei ta fonienta kai ta sumfwna.
+    char vowel[] = "AEIOU";
+    char consonant[] = "BCDEFGHJKLMNPQRSTVW";
+
+    char c; //  To simvolo pou tha diavazei apo to arxeio
+    int cntChars = 0;   //  Arxikopoihsh metriti gia na metraei to sunolo twn xaraktirwn.
+
+    FILE *source = fopen("text.txt", "r");  //  Diktis gia to arxeio.
+    /*
+     *  Periptosi pou to arxeio den diavastei
+     *  Allios tha ginei h katametrisi twn xaraktirwn
+     */
+    if (!source)
+        printf("Error to open file!\n");
+    else
+    {
+        while (fscanf(source, "%c", &c) != EOF)
+        {
+            cntChars++;
+            c = toupper(c); //  Metatrepei to xaraktira c apo mikro se kefalaio.
+
+            //  Sigkrisi tou xaraktira me tous pinakes wste na mpei stin katallili lista.
+            if (strchr(vowel, c))
+            {
+                put(c, &vowels);
+            }
+            else if (strchr(consonant, c))
+            {
+                put(c, &consonants);
+            }
+            else if (c != ' ')
+            {
+                put(c, &specials);
+            }
+    }
+        fclose(source); //  Kleisimo tou arxeiou.
+    }
+
+    //  Kalesma tis display gia emfanistoun oi listes.
+    puts("");
+    printf("-----------------------------------------------------------------------------------------------------------\n");
+
+    display(vowels.head, 1);
+
+    puts("");
+    printf("-----------------------------------------------------------------------------------------------------------\n");
+
+    display(consonants.head, 1);
+
+    puts("");
+    printf("-----------------------------------------------------------------------------------------------------------\n");
+
+    display(specials.head, 1);
+
+    puts("");
+    printf("-----------------------------------------------------------------------------------------------------------\n");
+
+    printf("Total characters: %d\n",cntChars);
+
+    puts("");
+    printf("-------------------------------------------End-Program-----------------------------------------------------\n");
+}
+
+//  Orismos sinartisis opou bazei ton xaraktira pou exei diavasei stin lista.
+int put(char character, struct list *lists)
+{
+    struct node *temp = lists->head;
+
+    struct node *newnode;   //  Neos Komvos.
+    newnode = (struct node *) malloc(sizeof(struct node));  //  Desmeush mnimis gia ton komvo
+
+    //  Elegxos an egine h desmeush mnimis.
+    if (!newnode)
+    {
+        printf("Error malloc");
+        return -1;
+    }
+
+    newnode->data = character; // O xaraktiras pou tha kataxorithei.
+    newnode->number = 1;
+
+    if (lists->head == NULL)
+    {
+        newnode->next = NULL;   //  O epomenos komvos deixnei sto null.
+        newnode->prev = NULL;   //  O proigoumenos komvos deixnei sto null.
+
+        //  To head kai to tail tis listas deixnei ston neokomvo.
+        lists->head = newnode;
+        lists->tail = newnode;
+    }
+    else
+    {
+        while (newnode->data > temp->data && temp->next != NULL)
+        {
+            temp = temp->next;
+        }
+
+        if (newnode->data == temp->data)
+        {
+            temp->number++;
+            free(newnode);
+        }
+        else if (newnode->data > temp->data)
+        {
+            newnode->next = temp->next;
+            newnode->prev = temp;
+            temp->next = newnode;
+
+            if (temp == lists->tail)
+            {
+                lists->tail = newnode;  //  To tail tou list deixnei ston komvo.
+            }
+        }
+        else
+        {
+            newnode->next = temp;   //  O epomenos komvos deixnei sto temp.
+            newnode->prev = temp->prev;
+
+            if (temp->prev)
+            {
+                temp->prev->next = newnode;
+            }
+
+            temp->prev = newnode;   //  O proigoumenos tou temp deixnei ston komvo.
+
+            if (temp == lists->head)
+            {
+                lists->head = newnode;  //  To head tis listas ginetai na deixnei ston komvo.
+            }
+        }
+    }
+}
+//  Orismos sinartisis opou emfanizei tis listes otan tis kaloume.
+int display(struct node *temp, int x)
+{
+    if (temp == NULL)
+    {
+        puts("");
+        return 0;
+    }
+    printf(" %c , %d ", temp->data, temp->number);
+
+    if (x==1)
+    {
+       display(temp->next, x);
+    }
+    else
+    {
+      display(temp->prev, x);
+    }
+}
+
+
