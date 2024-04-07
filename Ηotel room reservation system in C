@@ -1,0 +1,202 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define FLOOR 3
+#define ROOM 1
+
+int displayMenu();
+void displayAvailableRooms(int arr[FLOOR][ROOM]);
+void reserveRoom(int arr[FLOOR][ROOM]);
+void cancelReservation(int arr[FLOOR][ROOM]);
+void exitMenu();
+
+int main(void)
+{
+    int arr[FLOOR][ROOM] = {0};
+    while (1)
+    {
+        int choice = displayMenu();
+        switch (choice)
+        {
+        case 1:
+            displayAvailableRooms(arr);
+            break;
+        case 2:
+            reserveRoom(arr);
+            break;
+        case 3:
+            cancelReservation(arr);
+            break;
+        case 4:
+            exitMenu();
+            break;
+        default:
+            printf("Error: Invalid choice, please choose a valid option.\n");
+        }
+    }
+}
+
+// Function to display available rooms
+void displayAvailableRooms(int arr[FLOOR][ROOM])
+{
+    printf("Available rooms\n");
+    int availableRoom = 0;
+    for (int i = 0; i < FLOOR; i++)
+    {
+        for (int j = 0; j < ROOM; j++)
+        {
+            if (arr[i][j] == 0)
+            {
+                printf("On the %d floor, the %do room.\n", i + 1, j + 1);
+                availableRoom = 1;
+            }
+        }
+        puts("");
+    }
+    if (!availableRoom)
+        printf("Sorry, there are no available rooms.\n");
+}
+
+// Function to handle room reservation
+void reserveRoom(int arr[FLOOR][ROOM])
+{
+    int choice, flag = 0;
+    while (flag == 0)
+    {
+        printf("Enter the floor you wish to reserve (1-%d).\nOr enter 0 to return to the menu.\n", FLOOR);
+        printf("|-> ");
+        scanf("%d", &choice);
+
+        if (choice == 0)
+        {
+            printf("Returning to the menu...\n");
+            break;  // Exit the reservation loop and return to the menu
+        }
+
+
+        if (choice < 1 || choice > FLOOR)
+        {
+            printf("Error: Invalid floor number.\n");
+            continue;
+        }
+        int availableRoom = -1;  // Initialize to an invalid room index
+        for (int j = 0; j < ROOM; j++)
+        {
+            if (arr[choice - 1][j] == 0)
+            {
+                availableRoom = j;
+                break;
+            }
+        }
+        if (availableRoom != -1)
+        {
+            arr[choice - 1][availableRoom] = 1;
+            printf("Thank you for your reservation.\n");
+            printf("The reservation was made on the %do floor, %do room.\n", choice, availableRoom + 1);
+            flag = 1;
+        }
+        else
+        {
+            printf("Error: There are no rooms available on the %do floor.\n", choice);
+            // Check if there are no available rooms on any floor
+            int allRoomsBooked = 1;
+            for (int i = 0; i < FLOOR; i++)
+            {
+                for (int j = 0; j < ROOM; j++)
+                {
+                    if (arr[i][j] == 0)
+                    {
+                        allRoomsBooked = 0;
+                        break;
+                    }
+                }
+                if (!allRoomsBooked)
+                    break;
+            }
+            if (allRoomsBooked)
+            {
+                printf("Sorry, there are no available rooms in the entire hotel.\n");
+                break;  // Exit the reservation loop
+            }
+        }
+    }
+}
+
+// Function to handle reservation cancellation
+void cancelReservation(int arr[FLOOR][ROOM])
+{
+    int choice, second_choice;
+    do
+    {
+        printf("Enter the reservation you want to cancel.\n");
+        printf("On which floor have you made the reservation (1-%d)?\nOr enter 0 to return to the menu.\n", FLOOR);
+        printf("|-> ");
+        scanf("%d", &choice);
+
+        if (choice == 0)
+        {
+            printf("Returning to the menu...\n");
+            break;  // Exit the reservation loop and return to the menu
+        }
+
+        printf("What is the room of the reservation (1-%d)?\n", ROOM);
+        printf("|-> ");
+        scanf("%d", &second_choice);
+
+        if (choice > FLOOR)
+        {
+            printf("Error: There is no %do floor.\n",choice);
+            continue;
+        }
+        else if (second_choice > ROOM)
+        {
+            printf("Error: There is no %do room.\n",second_choice);
+            continue;
+        }
+        else if (arr[choice - 1][second_choice - 1] != 1)
+        {
+            printf("Error: There is no such reservation.\n");
+            break;
+        }
+        else
+        {
+            arr[choice - 1][second_choice - 1] = 0;
+            printf("The reservation of the %do room on the %do floor has been cancelled.\n", second_choice, choice);
+        }
+    }
+    while (1);
+}
+int displayMenu()
+{
+    int choice;
+    printf("<--------------------------Menu-------------------------->\n");
+    printf("1. Available rooms.\n");
+    printf("2. Room reservation.\n");
+    printf("3. Cancellation of reservation.\n");
+    printf("4. Exit.\n");
+
+    printf("|-> ");
+    scanf("%d", &choice);
+    printf("<-------------------------------------------------------->\n");
+    return choice;
+
+}
+void exitMenu()
+{
+    int choice;
+    printf("Are you sure you want to exit?\n");
+    printf("0.Yes       1.No\n");
+    printf("|-> ");
+    scanf("%d", &choice);
+    if (choice == 0)
+    {
+        printf("GoodBye!\n");
+        printf("<--------------------End-Programming--------------------->\n");
+        exit(0);
+    }
+    else if (choice == 1)
+    printf("Returning to the menu...\n");// User chose not to exit
+    else
+    printf("Error: Invalid choice, please enter 0 for Yes or 1 for No.\n");// User entered an invalid choice
+
+}
