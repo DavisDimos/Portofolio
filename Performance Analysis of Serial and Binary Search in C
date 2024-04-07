@@ -1,0 +1,192 @@
+// Davis Dimosthenis AM: 3212019038
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define N 100   // Dilwsi tou N gia dilothei poses fores tha ginei h epanalipsi
+
+// Dilosi sinartisewn.
+void serial_search_sorted();
+void binary_search();
+
+int main()
+{
+    // Dilosi metavlitwn.
+    int size,*array,i,key,comparisons_sorted,comparisons_binary,sum_cnt_sorted=0,sum_cnt_binary=0;
+    float start_time_sorted,end_time_sorted,sum_time_sorted=0;
+    float start_time_binary,end_time_binary,sum_time_binary=0;
+
+    srand(time(NULL));  // Arxikopoiei genitria tixaiwn timwn.
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+    /*  Eisagogi tou megethous tou pinaka.
+     *  Dimoioyrgia kai gemisma tou pinaka.
+     */
+    printf("Enter the size of the array: ");
+    scanf("%d",&size);
+
+    array=(int*)malloc(size*sizeof(int));   // Desmeysis mnimis gia tin dimiourgia pinaka.
+
+    // Xrisi tis if stin periptosi pou den tha desmeytei mnimi.
+    if (array == NULL)
+    {
+        printf("Error memory allocation.\n");
+        exit(0);
+    }
+
+    // Gia na gemesei o pinakas me sigkekrimenous taksinomimenous arithmous.
+    for(i=0;i<size;i++)
+    {
+        if (i<=1)
+            array[i]=i;
+        else
+            array[i]=array[i-1]+2*i;
+    }
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    //Emfanisi tou pinaka prin kalesoume tis sinartiseis.
+    printf("Array:\n");
+
+     for (i=0;i<size;i++)
+    {
+        printf("%d ",array[i]);
+    }
+
+    puts("\n");
+    printf("-----------------------------------------------------------------------\n");
+    /*  Arxikopoiei to key me tixaia timi sto diastima me vasi tis times tou pinaka.
+     *  Emfanisi tou key.
+     *  Xrisi for gia na ginei epanalipsi N fores wste na brethei o mesos arithmos sigkrisewn
+     *  kai o mesos xronos anazitisis.
+     */
+    for (i=0;i<N;i++)
+    {
+    key=rand()%array[size-1]+1;
+
+    printf("Key: %d\n",key);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+    /*  Kalesma tis sinartisis serial_search_sorted wste na vrei to key.
+     *  Euresis twn atrismatwn gia plithos kai xronou tis sigkekrimenis anazitisis.
+     */
+    printf("Serial search in sorted numbers: \n");
+
+    start_time_sorted = clock();    // Arxi metrhsis xronou.
+
+    serial_search_sorted(array,size,key,&comparisons_sorted);
+
+    sum_cnt_sorted+=comparisons_sorted;
+
+    end_time_sorted = clock();  // Telos metrhsis xronou.
+    sum_time_sorted+=(end_time_sorted-start_time_sorted);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+    /*  Kalesma tis sinartisis binary_search wste na vrei to key.
+     *  Euresis twn atrismatwn gia plithos kai xronou tis sigkekrimenis anazitisis.
+     */
+    printf("Binary search: \n");
+
+    start_time_binary = clock();
+
+    binary_search(array,size,key,&comparisons_binary);
+
+    sum_cnt_binary+=comparisons_binary;
+
+    end_time_binary = clock();
+    sum_time_binary+=(end_time_binary-start_time_binary);
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+    }
+    /*  Euresi kai emfanisi tou mesou arithmou sigkrisew
+     *  kai tou mesou xronou anazitisis kai gia tis 2 sinartiseis anazitisis.
+     */
+
+    printf("Average number of comparisons of Serial search in sorted numbers: %.2f\n",(float)sum_cnt_sorted/N);
+    printf("Average search time of Serial search in sorted numbers: %.2f\n",sum_time_sorted/N);
+    printf("Average number of comparisons of Binary search: %.2f\n",(float)sum_cnt_binary/N);
+    printf("Average search time of Binary search: %.2f\n",sum_time_binary/N);
+
+    puts("");
+    printf("-----------------------------End-Program-------------------------------\n");
+
+    return 0;
+}
+
+// Orismos sinartisis opou vriskei to key se taksinonimeno pinaka.
+void serial_search_sorted(int a[],int s,int k,int *cnt)
+{
+    int c=0;    // Arxikopoiisi tou c gia na elegxei an to key vriksetai ston pinaka.
+
+    for(int i=0; i<s; i++)
+    {  // Elegxos me if an to stoixeio tou pinaka einai megalitero tou key
+      if (*(a+i) > k)
+        {
+          break;
+        }
+        else if (*(a+i) == k)
+        {
+            printf("The key %d founded in %d position in the array\n",k,i+1);
+
+            *cnt =i+1;  // Metrisi gia to plithos sigkrisewn.
+            printf("Compared %d times until was founded.\n",cnt);
+            c=1;     // Gia to oti vrethike to key dilonetai to c ws 1
+            break;
+        }
+    }
+    /*
+     * Xrisi tou c stin periptwsi pou den tha vrethei to key .
+     * Emfanisi katalilou minimatos.
+     */
+     if (c == 0)
+        {
+           printf("The key %d was not founded in the array.\n",k);
+        }
+}
+
+// Orismos sinartisis opou kanei duadiki anazitisi.
+void binary_search(int a[],int s,int k,int *cnt)
+{
+    int low = 0,high = s - 1,medium,found = 0;
+
+    while(found == 0 && low <= high)
+    {
+        *cnt+=1; // Metrisi gia to plithos sigkrisewn.
+
+        medium=(low+high)/2; // Gia na vrei tin mesea timi tou pinaka.
+
+        // Xrisi if otan vrei to key
+        if (a[medium] == k)
+        {
+            found = 1;
+        }
+        else if (a[medium] < k)
+        {
+            low = medium+1; // Gia na kanei elegxo oti to key einai stin deksia pleura tou pinaka.
+        }
+        else
+        {
+            high = medium-1; // Gia na kanei elegxo oti to key einai stin aristeri pleura tou pinaka.
+        }
+    }
+
+    /*  Xrisi tou found stin periptwsi pou den tha vrethei to key h exei vrethei.
+     *  Emfanisi stoixeiwn stin kathe periptosi.
+     */
+    if (found == 0)
+    {
+        printf("The key %d was not founded in the array.\n",k);
+    }
+    else
+    {
+        printf("The key %d founded in %d position in the array\n",k,medium);
+        printf("Compared %d times until was founded.\n",cnt);
+    }
+}
+
