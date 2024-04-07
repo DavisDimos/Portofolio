@@ -1,0 +1,74 @@
+// Davis Dimosthenis AM: 3212019038
+
+#include <stdio.h>
+
+#define Size 10 // Dilwsi megethous pinaka.
+
+// Dilosi sinartisis
+int binary_search();
+
+int main()
+{
+    // Dilosi metavlitwn.
+    int arr[Size]={0,1,2,3,5,7,10,13,21,22}; // Pinakas me statheres times.
+    int Key=7;  // Key me statheri timi
+    int low=0,high=Size-1,binary;
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    //Emfanisi tou pinaka.
+    printf("Array: \n");
+    for(int i=0;i<Size;i++)
+    {
+        printf("%d ",arr[i]);
+    }
+
+    puts("\n");
+    printf("-----------------------------------------------------------------------\n");
+    /*  Kalesma tis sinartisis binary_search
+     *  Apothikeyoume to apotelesma tis sinartisis stin metavliti binary
+     *  Elegxos me if an vrethike to key h oxi.
+     */
+    binary = binary_search(arr,low,high, Key);
+
+    if (binary == -1)
+    {
+        printf("The key %d was not founded in the array.\n",Key);
+    }
+    else
+    {
+        printf("The key %d founded in %d position in the array\n",Key,binary);
+    }
+
+    puts("");
+    printf("-----------------------------End-Program-------------------------------\n");
+
+    return 0;
+}
+
+// Orismos sinartisis opou kanei anadromika duadiki anazitisi.
+int binary_search(int a[],int l,int h, int Key)
+{
+    int medium; // Dilosi metavlitis gia tin mesaia timi tou pinaka.
+
+    if (l<=h)
+    {
+         medium=l + (h - l) / 2; // Gia na vrei tin mesea timi tou pinaka.
+    }
+    // Xrisi if otan vrei to key stin mesi tou pinaka.
+    if (a[medium] == Key)
+    {
+    return medium;
+    }
+
+    //  Elegxos an to key einai stin aristeri pleura tou pinaka.
+    if (a[medium] > Key)
+    {
+        return binary_search(a, l, medium - 1, Key);
+    }
+    else // allios tote tha einai stin deksia pleura tou pinaka.
+    {
+        return binary_search(a, medium + 1, h, Key);
+    }
+}
