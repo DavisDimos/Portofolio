@@ -1,0 +1,157 @@
+// Davis Dimosthenis AM: 3212019038
+
+#include <stdio.h>
+
+// Dilosi sunartisewn.
+void push(char ***stack, char *string, int cntGender);
+char *pop(char ***stack, int cntGender);
+void init(char ***stack, int memb);
+
+int main()
+{
+    int members= 0, cntMen = 0, cntWomen= 0, totalCouples = 0;  //  Arxikopoihsh metritwn.
+
+    do{
+        puts("");
+        printf("-----------------------------------------------------------------------\n");
+
+        printf("How many members will attend the event: ");
+        scanf("%d", &members);
+
+        if(members<0||members > 50)
+        {
+            puts("");
+            printf("-----------------------------------------------------------------------\n");
+
+            printf("Wrong value!\n");
+
+            continue;
+        }
+        else
+        {
+            break;
+        }
+    }while(1);
+
+
+    char *surname[members],*stackMen[members],*stackWomen[members],gender[members],name[50];
+
+    //  kalesma tis sinartisis
+    cal(&stackMen, members);
+    cal(&stackWomen, members);
+
+
+    for (int i = 0; i < members; i++)
+    {
+        puts("");
+        printf("-----------------------------------------------------------------------\n");
+
+        printf("%d. Member's name: ",i+1);
+
+        fflush(stdin);
+        gets(name);
+
+        surname[i] = calloc(strlen(name), sizeof(char));
+        strcpy(surname[i], name);
+
+        puts("");
+        printf("-----------------------------------------------------------------------\n");
+
+        printf("Enter %s's gender\n",surname[i]);
+        printf("Press m (male) or f (female): ");
+        scanf("%c", &gender[i]);
+    }
+
+    //  Kanei othisi stin antistixi stoiva pou anoikei.
+    for (int i = 0; i < members; i++)
+    {
+        if (gender[i] == 'm')
+        {
+            push(&stackMen, surname[i], cntMen);
+            cntMen++;
+        }
+        else
+        {
+            push(&stackWomen, surname[i], cntWomen);
+            cntWomen++;
+        }
+    }
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+   //   Emfanisi twn zeygariwn
+    for (int i = 0; i < members; i++)
+    {
+        if (!strcmp(stackMen[i],"") && !strcmp(stackWomen[i],""))
+        {
+            printf("%s will dance with %s \n", pop(&stackMen, cntMen), pop(&stackWomen, cntWomen));
+            totalCouples++;
+        }
+    }
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+
+    printf("Total couples: %d\n",totalCouples);
+
+    puts("");
+    printf("-----------------------------End-Program-------------------------------\n");
+    return 0;
+}
+
+//  Orismos sinartisis opou kanei othisi.
+void push(char ***stack, char *string, int cntGender)
+{
+    int cnt = 0;
+    for (int i = 0; i < cntGender; i++)
+    {
+        if (strcmp(stack[i], ""))
+        {
+            cnt++;
+        }
+    }
+
+    if (cnt <= cntGender)
+    {
+        memmove(&stack[1], &stack[0], cnt * sizeof(char *));    //  antigragei to stack0 sto 1
+        stack[0] = calloc(strlen(string), sizeof(char));
+        strcpy(stack[0], string);   //  antigrafi string sto stack0
+    }
+}
+
+//  Orismos sinartisis opou kanei apothisi.
+char *pop(char ***stack, int cntGender)
+{
+    int cnt = 0;    //  Arxikopoihsh metriti.
+    char *temp;     //  Dilosi dikti.
+
+    for (int i = 0; i < cntGender; i++)
+    {
+        if (strcmp(stack[i], ""))
+        {
+            cnt++;
+        }
+    }
+
+    if (!cnt)
+    {
+        return "";
+    }
+
+    temp = calloc(strlen(stack[cnt - 1]), sizeof(char));
+    strcpy(temp, stack[cnt - 1]);
+    strcpy(stack[cnt - 1], "");
+
+    return temp;
+}
+
+//  Orismos sinartisis opou kanei desmesei mnimis kai dimiiourgia gia thn stoiva.
+void cal(char ***stack, int memb)
+{
+    for (int i = 0; i < memb; i++)
+    {
+        stack[i] = calloc(1, sizeof(char));
+        strcpy(stack[i], "");
+    }
+}
