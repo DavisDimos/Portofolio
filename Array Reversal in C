@@ -1,0 +1,88 @@
+// Davis Dimosthenis AM: 3212019038
+
+#include <stdio.h>
+
+#define Size 6  // Dilwsi megethous pinaka.
+
+// Dilosi sinartisewn.
+void reverses_repetition();
+void reverses_recursive();
+
+int main()
+{
+    int arr[Size]={1,3,4,6,5,9};    // Pinakas me statheres times
+
+    puts("");
+    printf("-----------------------------------------------------------------------\n");
+    //Emfanisi tou pinaka.
+
+    printf("Array: \n");
+    for(int i=0;i<Size;i++)
+    {
+        printf("%d ",arr[i]);
+    }
+
+    puts("\n");
+    printf("-----------------------------------------------------------------------\n");
+
+    //  Kalesma tis sinartisis reverses_repetitively wste na emfanisei ton antistrefomeno pinaka me epanalipsi.
+    printf("Reversible array with repetition: \n");
+    reverses_repetitively(arr,Size);
+
+    puts("\n");
+    printf("-----------------------------------------------------------------------\n");
+
+    //  Kalesma tis sinartisis reverses_recursive wste na emfanisei ton antistrefomeno pinaka me anadromika.
+    printf("Reversible array with recursive: \n");
+    reverses_recursive(arr,arr[0],arr[Size-1]);
+    for (int i=0;i<Size;i++)
+    {
+        printf("%d ",arr[i]);
+    }
+
+    puts("\n");
+    printf("-----------------------------End-Program-------------------------------\n");
+
+    return 0;
+}
+
+// Orismos sinartisis opou kanei ta stoixeia tou pinaka na antistrefontai epanaliptika.
+void reverses_repetitively(int a[],int s)
+{
+    int temp,i;
+
+    for(i = 0; i<s/2; i++)
+    {   /*
+         *  Xrisi tis metavlitis temp wste na ginei h apothikeusi tou stoixeiou tou pinaka se auto.
+         *  To aristero stoixeio allazei me to deksi kai to deksi me to aristero.
+         */
+        temp = a[i];
+        a[i] = a[s-i-1];
+        a[s-i-1] = temp;
+    }
+
+    // Wste na emfanistei sto kalesma tis sinartisis ton antistrefomeno pinaka.
+    for(i = 0; i < s; i++)
+    {
+        printf("%d ", a[i]);
+    }
+}
+
+// Orismos sinartisis opou kanei ta stoixeia tou pinaka na antistrefontai anadromika.
+void reverses_recursive(int *a, int low, int high)
+{   /*
+     *  Xrisi tis metavlitis temp wste na ginei h apothikeusi tou stoixeiou tou pinaka se auto.
+     *  To aristero stoixeio allazei me to deksi kai to deksi me to aristero.
+     */
+    int temp;
+
+    if(low <= high)
+    {
+        temp = a[high];
+        a[high] = a[low];
+        a[low] = temp;
+
+        reverses_recursive(a, low+1, high-1);  // Anadromika antistrefoume ton upoloipo pinaka.
+    }
+}
+
